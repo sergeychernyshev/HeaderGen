@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Performance headers generator</title>
+<style>
+tt {
+	font-weight: bold;
+}
+</style>
+</head> 
+<body>
+<h1>Performance headers generator</h1>
+
+<p><tt>headergen.php</tt> is a script to generate assets with a combination of headers and other characteristics.</p>
+
+<p>It uses path info for configuration.</p>
+
+<ul>
+	<li><a href="headergen.php/png/image.png">headergen.php/png/image.png</a> - <tt>png</tt> creates png image. Formats supported: <tt>png</tt>, <tt>jpg</tt>, <tt>gif</tt>, <tt>ico</tt>, <tt>css</tt>, <tt>js</tt></li>
+	<li><a href="headergen.php/png/3s/image.png">headergen.php/png/3s/image.png</a> - <tt>3s</tt> adds 3 seconds to the load time</li>
+	<li><a href="headergen.php/png/expires/image.png">headergen.php/png/expires/image.png</a> - <tt>expires</tt> adds long-term expires header</li>
+	<li><a href="headergen.php/png/lastmod/image.png">headergen.php/png/lastmod/image.png</a> - <tt>lastmod</tt> adds last-modified header and responds with 304 if if-modified-since request was sent</li>
+	<li><a href="headergen.php/png/3s/lastmod/expires/image.png">headergen.php/png/3s/lastmod/expires/image.png</a> - you can also combine them all in one URL to have them all set (except for the content types)</li>
+</ul>
+
+<p>Last portion and query string are completely ignored so do whatever you need with them to please tools and browsers.</p>
+
+<h2>A few examples</h2>
+<h3>Pages with 200, 304 and infinite expires</h3>
+<p>Compare 3 version of the same page:</p>
+<ul>
+<li><a href="200.html">200.html</a> - page with all assets returning <tt>200</tt> error code without <tt>Last-modified</tt> header so browsers download them every time.</li>
+<li><a href="lastmod.html">lastmod.html</a> - same page with all assets returning <tt>Last-modified</tt> header and replying with <tt>304 Not Modified</tt> so browsers do not download asset bodies every time.</li>
+<li><a href="expires.html">expires.html</a> - same page with infinite <tt>Expires</tt> header set so browsers do not re-request assets (until they are purged from browser cache).</li>
+</ul>
+
+Currently most of the sites are configured similarly to <a href="expires.html">lastmod.html</a>
+
+<h4>Timings for repeat view using WebPageTest.org</h4>
+
+<table id="tableResults" class="pretty" border="1" cellpadding="10" cellspacing="0">
+<tbody>
+<tr>
+<th align="center" class="empty" valign="middle"></th>
+<th align="center" class="empty" valign="middle" colspan="3"></th>
+<th align="center" class="border" valign="middle" colspan="4">Document Complete</th>
+<th align="center" class="border" valign="middle" colspan="3">Fully Loaded</th>
+</tr>
+<tr>
+<th align="center" class="empty" valign="middle"></th>
+<th align="center" valign="middle">Load Time</th>
+<th align="center" valign="middle">First Byte</th>
+<th align="center" valign="middle">Start Render</th>
+
+<th align="center" class="border" valign="middle">Time</th>
+<th align="center" valign="middle">Requests</th>
+<th align="center" valign="middle">Bytes In</th>
+<th align="center" valign="middle">Bandwidth</th>
+
+<th align="center" class="border" valign="middle">Time</th>
+<th align="center" valign="middle">Requests</th>
+<th align="center" valign="middle">Bytes In</th>
+</tr>
+<tr>
+<td align="left" valign="middle">First View</td>
+<td id="fvLoadTime" valign="middle">11.827s</td>
+<td id="fvTTFB" valign="middle">0.444s</td>
+<td id="fvStartRender" valign="middle">4.802s</td>
+<td id="fvDocComplete" class="border" valign="middle">11.827s</td>
+<td id="fvRequestsDoc" valign="middle">15</td>
+<td id="fvBytesDoc" valign="middle">62 KB</td>
+<td id="fvBandwidth" valign="middle">44.27 Kbps</td>
+<td id="fvFullyLoaded" class="border" valign="middle">11.827s</td>
+<td id="fvRequests" valign="middle">15</td>
+<td id="fvBytes" valign="middle">62 KB</td>
+</tr>
+<tr>
+<td align="left" class="even" valign="middle">Repeat View (<a href="http://www.webpagetest.org/result/100329_896df9bc9c445a90cda1f8d987ebbe1a/">200</a>)</td>
+<td id="rvLoadTime" class="even" valign="middle">11.820s</td>
+<td id="rvTTFB" class="even" valign="middle">0.424s</td>
+<td id="rvStartRender" class="even" valign="middle">4.745s</td>
+<td id="rvDocComplete" class="even border" valign="middle">11.820s</td>
+<td id="rvRequestsDoc" class="even" valign="middle">15</td>
+<td id="rvBytesDoc" class="even" valign="middle">62 KB</td>
+<td id="rvBandwidth" class="even" valign="middle">N//A</td>
+<td id="rvFullyLoaded" class="even border" valign="middle">11.820s</td>
+<td id="rvRequests" class="even" valign="middle">15</td>
+<td id="rvBytes" class="even" valign="middle">62 KB</td>
+</tr>
+<tr>
+<td align="left" class="even">Repeat View (<a href="http://www.webpagetest.org/result/100329_280b1256fd5071127ea2c38863ac5b66/">lastmod</a>)</td>
+<td id="rvLoadTime" class="even" valign="middle">1.867s</td>
+<td id="rvTTFB" class="even" valign="middle">0.438s</td>
+<td id="rvStartRender" class="even" valign="middle">0.743s</td>
+<td id="rvDocComplete" class="even border" valign="middle">1.867s</td>
+<td id="rvRequestsDoc" class="even" valign="middle">15</td>
+<td id="rvBytesDoc" class="even" valign="middle">2 KB</td>
+<td id="rvBandwidth" class="even" valign="middle">N//A</td>
+<td id="rvFullyLoaded" class="even border" valign="middle">1.867s</td>
+<td id="rvRequests" class="even" valign="middle">15</td>
+<td id="rvBytes" class="even" valign="middle">2 KB</td>
+</tr>
+<tr>
+<td align="left" class="even" valign="middle">Repeat View (<a href="http://www.webpagetest.org/result/100329_5a74a05a7167306148447d167997942d/">expires</a>)</td>
+<td id="rvLoadTime" class="even" valign="middle">0.519s</td>
+<td id="rvTTFB" class="even" valign="middle">0.424s</td>
+<td id="rvStartRender" class="even" valign="middle">0.470s</td>
+<td id="rvDocComplete" class="even border" valign="middle">0.519s</td>
+<td id="rvRequestsDoc" class="even" valign="middle">1</td>
+<td id="rvBytesDoc" class="even" valign="middle">1 KB</td>
+<td id="rvBandwidth" class="even" valign="middle">N//A</td>
+<td id="rvFullyLoaded" class="even border" valign="middle">0.519s</td>
+<td id="rvRequests" class="even" valign="middle">1</td>
+<td id="rvBytes" class="even" valign="middle">1 KB</td>
+</tr>
+</tbody></table>
+
+<h4>Waterfall diagrams for repeat view (scaled to match the time)</h4>
+<p><a href="http://www.webpagetest.org/result/100329_896df9bc9c445a90cda1f8d987ebbe1a/1/details/cached/">200.html<br/><img src="http://www.webpagetest.org/waterfall.png?test=100329_896df9bc9c445a90cda1f8d987ebbe1a&run=1&cached=1&max=&width=1500&type=waterfall&cpu=0&bw=0&dots=1&requests=" style="border: 0"/></a></p>
+
+<p><a href="http://www.webpagetest.org/result/100329_280b1256fd5071127ea2c38863ac5b66/1/details/cached/">lastmod.html<br/><img src="http://www.webpagetest.org/waterfall.png?test=100329_280b1256fd5071127ea2c38863ac5b66&run=1&cached=1&max=&width=450&type=waterfall&cpu=0&bw=0&dots=0&requests=" style="botder: 0"/></a></p>
+
+<p><a href="http://www.webpagetest.org/result/100329_5a74a05a7167306148447d167997942d/1/details/cached/">expires.html<br/><img src="http://www.webpagetest.org/waterfall.png?test=100329_5a74a05a7167306148447d167997942d&run=1&cached=1&max=&width=300&type=waterfall&cpu=0&bw=0&dots=0&requests=" style="border: 0"/></a></p>
+
+</body>
+</html>
